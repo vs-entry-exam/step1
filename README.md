@@ -1,4 +1,4 @@
-# Step1 — RAG QA MVP
+﻿# Step1 — RAG QA MVP
 
 문서 기반 RAG QA 최소 기능(MVP)을 구현한 프로젝트입니다. 업로드한 문서(PDF/MD/TXT)를 인덱싱하고, 질문에 대해 출처를 포함한 한국어 답변을 제공합니다.
 
@@ -31,7 +31,7 @@ step1/
 ```
 cd "vision space exam/step1/apps/web"
 npm install
-npm run dev -p 3000
+npm run dev
 # 브라우저: http://localhost:3000
 ```
 
@@ -49,15 +49,13 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 참고: 백엔드는 반드시 `vision space exam/step1/apps/api` 디렉터리에서 실행하세요. 임포트 경로 기준으로 실행되며, 다른 위치에서 실행하면 모듈 임포트 오류가 발생할 수 있습니다.
 ```
 
-### 빠른 실행 스크립트(의존성 설치 완료 시)
+## 빠른 실행 스크립트(의존성 설치 완료 시)
 이미 가상환경 생성 및 `pip install -r requirements.txt`, 프론트의 `npm install`까지 끝난 상태라면, 루트 스크립트로 손쉽게 실행할 수 있습니다.
 
-PowerShell에서:
+Windows PowerShell:
 ```
 cd "vision space exam/step1"
-
 # 백엔드와 프론트 동시에(각각 새 터미널 창)
-# Windows PowerShell 내에서:
 powershell -File .\scripts\dev.ps1 -All
 # 또는 현재 세션에서 실행:
 ./scripts/dev.ps1 -All
@@ -76,6 +74,20 @@ powershell -File .\scripts\dev.ps1 -Frontend
 주의: 실행 정책 오류가 나면 현재 세션 한정으로 허용하세요.
 ```
 Set-ExecutionPolicy -Scope Process RemoteSigned
+```
+
+Linux / macOS (Bash):
+```
+cd "vision space exam/step1"
+chmod +x scripts/dev.sh
+# 백엔드와 프론트 동시에 (한 터미널에서 병렬 실행)
+./scripts/dev.sh --all
+
+# 백엔드만
+./scripts/dev.sh --backend
+
+# 프론트만
+./scripts/dev.sh --frontend
 ```
 
 ## 환경변수

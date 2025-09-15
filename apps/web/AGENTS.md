@@ -26,7 +26,7 @@
 
 ## 스크립트
 - 설치: `npm install`
-- 개발: `npm run dev -p 3000` → http://localhost:3000
+- 개발: `npm run dev` → http://localhost:3000
 - 빌드: `npm run build`
 - 실행: `npm start -p 3000`
 
@@ -57,10 +57,9 @@
 
 ## 로컬 실행 참고
 - 백엔드(별도): `uvicorn main:app --host 0.0.0.0 --port 8000 --reload`
-- 프론트: `npm run dev -p 3000`
+- 프론트: `npm run dev`
 - 인제스트 예시: `curl -F "files=@../../data/sample.pdf" http://localhost:8000/ingest`
 - 질의 예시: `curl -X POST http://localhost:8000/ask -H 'Content-Type: application/json' -d '{"question":"sample.pdf 핵심 요약","top_k":4}'`
 
 ## 향후 개선(메모)
 - 인제스트 진행률/상태 업데이트, 질문 히스토리, 출처 강조 렌더링, 모킹 API로 오프라인 개발 지원
-

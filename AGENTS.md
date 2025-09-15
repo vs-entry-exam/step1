@@ -49,7 +49,7 @@ step1/
   ```bash
   cd "vision space exam/step1/apps/web"
   npm install
-  npm run dev -p 3000
+  npm run dev
   # 브라우저: http://localhost:3000
   ```
 
