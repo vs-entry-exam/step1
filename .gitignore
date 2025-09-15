@@ -1,0 +1,54 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.history/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Env files (keep examples)
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Project-specific env at repo root
+/.env.api
+/.env.web
+
+# ChromaDB persistence
+/chroma/
+
+# Node / Next.js
+**/node_modules/
+**/.next/
+**/out/
+**/dist/
+**/build/
+**/.turbo/
+**/.parcel-cache/
+
+# Python / FastAPI
+**/.venv/
+**/__pycache__/
+**/.mypy_cache/
+**/.pytest_cache/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+
+# Coverage
+**/.coverage
+**/.coverage.*
+**/coverage/
+
+# Misc
+*.swp
+*.swo
+
