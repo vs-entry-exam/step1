@@ -1,0 +1,23 @@
+[tool.black]
+line-length = 100
+target-version = ["py311", "py310"]
+include = "\.(py)$"
+# Black expects a single regex string for exclude; use a portable pattern
+exclude = '''
+/(\.venv|build|dist|chroma|__pycache__)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+known_first_party = ["app"]
+skip = [".venv", "chroma"]
+from_first = true
+lines_between_types = 1
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = [".venv", "chroma"]
+lint.select = ["E", "F", "I"]
+lint.ignore = []

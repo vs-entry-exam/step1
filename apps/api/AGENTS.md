@@ -47,6 +47,12 @@
 ## ì‹¤í–‰/í…ŒìŠ¤íŠ¸
 ```bash
 cd step1/apps/api
+# (ê¶Œì¥) ê°€ìƒí™˜ê²½ í™œì„±í™” í›„ ì‹¤í–‰
+# Windows PowerShell
+. .venv/Scripts/Activate.ps1
+# macOS/Linux
+# source .venv/bin/activate
+
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 # ì¸ì œìŠ¤íŠ¸
@@ -79,9 +85,43 @@ curl -X POST http://localhost:8000/ask \
 - ì‹¤í–‰ ì˜ˆì‹œ:
   ```bash
   cd step1/apps/api
-  pytest -q
+  # (ê¶Œì¥) ê°€ìƒí™˜ê²½ í™œì„±í™” í›„ í…ŒìŠ¤íŠ¸ ì‹¤í–‰
+  # Windows PowerShell
+  . .venv/Scripts/Activate.ps1
+  # macOS/Linux
+  # source .venv/bin/activate
+
+  # venvì˜ pytestë¥¼ ì‚¬ìš©
+  python -m pytest -q
   ```
 - êµ¬í˜„ ë‚´ìš©:
   - `conftest.py`: TestClient ìƒì„±, ì„ì‹œ Chroma ë””ë ‰í„°ë¦¬ ì„¤ì •, Embedding/LLM ëª¨í‚¹
   - `test_health.py`: `/health` 200 OK
   - `test_ingest_ask_delete.py`: ì—…ë¡œë“œâ†’ì§ˆì˜â†’ì‚­ì œ ì‹œë‚˜ë¦¬ì˜¤ ê²€ì¦ ë° 422 ê²½ê³„ ì¼€ì´ìŠ¤
+
+---
+
+## Code Style (API)
+- í¬ë§·í„°: Black(ë¼ì¸ 100), isort(Black í”„ë¡œíŒŒì¼), Ruff(ê¸°ë³¸ E/F/I)
+- ì„¤ì •: `apps/api/pyproject.toml`
+- ê°œë°œ ì˜ì¡´ì„±: `apps/api/requirements-dev.txt`
+- ì‹¤í–‰(venv í™œì„±í™” í›„):
+  ```bash
+  # ì„¤ì¹˜(ìµœì´ˆ 1íšŒ)
+  pip install -r requirements-dev.txt
+  # í¬ë§·/ì •ë ¬/ë¦°íŠ¸
+  black .
+  isort .
+  ruff check .
+  ```
+
+---
+
+## API º¸°­
+- `DELETE /docs` (application/json)
+  - ¿äÃ»: `{ "title": string, "page"?: number }`
+  - ÀÀ´ä: `{ "deleted": number }`
+
+## Âü°í
+- ÇÁ·ÒÇÁÆ®: `.env.api`ÀÇ `PROMPT_FILE|PROMPT_PATH`·Î ÆÄÀÏ ±â¹İ ÇÁ·ÒÇÁÆ®¸¦ ÁöÁ¤ÇÒ ¼ö ÀÖ½À´Ï´Ù(º¯°æ ½Ã mtime Ä³½Ã·Î ÀÚµ¿ ¹İ¿µ, ½ÇÆĞ ½Ã ³»Àå Á¤Ã¥À¸·Î Æú¹é).
+- ÀÎµ¦½º °æ·Î: `CHROMA_PERSIST_DIR` »ó´ë°æ·Î´Â `apps/api` ±âÁØÀ¸·Î ÇØ¼®µË´Ï´Ù. ¿î¿µ¿¡¼­´Â Àı´ë°æ·Î ±ÇÀå.

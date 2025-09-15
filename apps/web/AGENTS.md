@@ -90,3 +90,21 @@
   - `tests/components.test.tsx`: `LoadingButton`/`Notice` 렌더·상태 검증
   - `tests/home.page.test.tsx`: Ask 페이지 상호작용(답변 렌더 확인)
   - `tests/ingest.page.test.tsx`: Upload 페이지 삭제 유효성(제목 누락 시 에러)
+
+---
+
+## Code Style (Web)
+- 포맷터: Prettier (`.prettierrc.json` at repo root)
+- 린터: ESLint (`next lint`)
+- 실행:
+  - `npm run lint` / `npm run lint:fix`
+  - `npm run format`
+- ignore: `.prettierignore`(chroma/.venv/node_modules 등)
+
+---
+
+## Scripts
+- ���� ����(����):
+  - Windows: `powershell -File step1/scripts/dev.ps1 -All`
+  - Linux/macOS: `step1/scripts/dev.sh --all`
+

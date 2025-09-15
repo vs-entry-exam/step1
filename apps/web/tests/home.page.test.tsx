@@ -1,3 +1,4 @@
+import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 
@@ -16,4 +17,3 @@ describe('Ask page', async () => {
     expect(await screen.findByText('테스트 답변')).toBeInTheDocument();
   });
 });
-

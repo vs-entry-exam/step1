@@ -8,9 +8,9 @@
 - 목표: 업로드 → 임베딩/인덱싱 → 유사도 검색 → LLM 응답(출처 포함)
 
 ## 주요 기능(MVP)
-- 인제스트(`/ingest`): 여러 문서 업로드 → 파싱/클린/청킹 → 임베딩 → Chroma upsert → `indexed: N`
+- 업로드(`/ingest`): 여러 문서 업로드 → 파싱/클린/청킹 → 임베딩 → Chroma upsert → `indexed: N`
 - 질의(`/ask`): 질문 + `top_k` → 유사도 검색 → 한국어 답변 + 출처(`[title:page]`)
-- 프론트 헤더 토글: Ask ↔ Ingest 페이지 전환
+- 프론트 헤더 토글: Ask ↔ RAG 페이지 전환
 
 ## 폴더 구조(주요)
 ```
@@ -106,6 +106,7 @@ CHROMA_PERSIST_DIR=../../chroma
 CHUNK_SIZE=1000
 CHUNK_OVERLAP=150
 ALLOW_ORIGINS=http://localhost:3000
+PROMPT_FILE=rag/prompts/answer.txt   # 선택: 프롬프트 파일 경로 오버라이드(PROMPT_PATH도 지원)
 ```
 
 프론트엔드(`step1/apps/web/.env.local`)
@@ -121,11 +122,14 @@ NEXT_PUBLIC_API_BASE=http://localhost:8000
 - `POST /ask` (application/json)
   - 요청: `{ "question": string, "top_k"?: number }`
   - 응답: `{ "answer": string, "sources": [{ "title": string, "page"?: number, "score"?: number }] }`
+- `DELETE /docs` (application/json)
+  - 요청: `{ "title": string, "page"?: number }`
+  - 응답: `{ "deleted": number }`
 
 ## 프론트엔드 UI
-- `/ingest`: 파일 선택·업로드 → 인덱싱 결과(`indexed: N`)와 에러/로딩 표시
+- `/ingest`(Upload): 파일 선택·업로드 → 인덱싱 결과(`indexed: N`)와 에러/로딩 표시
 - `/`: 질문·`top_k` 입력 → 답변과 출처 리스트(`[title:page]`, score는 소수 3자리 표시)
-- 헤더: Ask ↔ Ingest 토글 버튼
+- 헤더: Ask ↔ RAG 토글 버튼
 
 ## RAG 파이프라인
 - 인제스트: PDF(pypdf)/MD/TXT → 텍스트 클린 → 청킹(기본 1000/150) → 임베딩 → Chroma upsert(meta: title, page)
@@ -147,3 +151,15 @@ npm run test          # watch
 npm run test:run      # 1회 실행
 npm run test:coverage # 커버리지
 ```
+
+## 코드 스타일
+- Web(Prettier/ESLint)
+  - 포맷: `npm run format`
+  - 린트: `npm run lint` / `npm run lint:fix`
+- API(Black/Isort/Ruff)
+  - venv 활성화 후 설치: `pip install -r requirements-dev.txt`
+  - 포맷/정렬/린트: `isort . && black . && ruff check . --fix`
+
+## 참고
+- 프롬프트: `.env.api`의 `PROMPT_FILE|PROMPT_PATH`로 파일 기반 프롬프트를 지정할 수 있습니다(미지정 시 기본 파일 사용, 실패 시 내장 정책으로 폴백).
+- 인덱스 경로: `CHROMA_PERSIST_DIR` 상대경로는 `apps/api` 기준으로 해석됩니다. 운영에서는 절대경로 권장.

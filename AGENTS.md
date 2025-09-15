@@ -80,6 +80,21 @@ curl -X POST http://localhost:8000/ask \
 
 ---
 
+### 10) Scripts/Run
+- 백엔드: `cd step1/apps/api && uvicorn app.main:app --reload`
+- 스크립트 실행(동시):
+  - Windows: `powershell -File step1/scripts/dev.ps1 -All`
+  - Linux/macOS: `step1/scripts/dev.sh --all`
+
+### 11) Prompt/Env
+- 프롬프트 파일 오버라이드: `.env.api`의 `PROMPT_FILE` 또는 `PROMPT_PATH`
+- 인덱스 경로: `CHROMA_PERSIST_DIR` 상대경로는 `apps/api` 기준
+
+### 12) Tests 개요
+- 백엔드(pytest): venv 활성화 후 `python -m pytest -q`
+- 프론트(Vitest): `cd step1/apps/web && npm run test:run`
+---
+
 ### 10) 커밋 규칙 (Conventional Commits)
 - 형식: `type(scope)!: subject`
   - type: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { AskRequest, AskResponse, askQuestion, toErrorMessage } from '../lib/api';
 import { LoadingButton } from '../components/LoadingButton';
 import { Notice } from '../components/Notice';
