@@ -6,9 +6,9 @@ from typing import List, Tuple
 
 from fastapi import APIRouter, UploadFile, File, HTTPException
 
-from config import load_config
-from utils_parse import read_pdf, read_md, read_txt, clean_text, chunk_text
-from vectorstore import VectorStore
+from app.config import load_config
+from app.core.parsing import read_pdf, read_md, read_txt, clean_text, chunk_text
+from app.core.vectorstore import VectorStore
 
 
 router = APIRouter()

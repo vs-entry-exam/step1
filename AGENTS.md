@@ -40,7 +40,7 @@ step1/
 - 백엔드
   ```bash
   cd "vision space exam/step1/apps/api"
-  uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+  uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
   # 참고: 반드시 apps/api 디렉터리에서 실행
   # 헬스체크: http://localhost:8000/health → {"status":"ok"}
   ```

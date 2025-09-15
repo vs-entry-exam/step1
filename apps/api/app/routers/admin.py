@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException
 
-from models import DeleteRequest, DeleteResponse
-from vectorstore import VectorStore
+from app.models.schemas import DeleteRequest, DeleteResponse
+from app.core.vectorstore import VectorStore
 
 
 router = APIRouter()
@@ -16,4 +16,3 @@ async def delete_docs(req: DeleteRequest):
     vs = VectorStore()
     n = vs.delete_by_meta(req.title, req.page)
     return DeleteResponse(deleted=n)
-

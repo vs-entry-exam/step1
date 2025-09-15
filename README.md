@@ -42,7 +42,7 @@ python -m venv .venv
 # source .venv/bin/activate    # macOS/Linux
 python -m pip install -U pip
 pip install -r requirements.txt
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 # 헬스체크: http://localhost:8000/health → {"status":"ok"}
 
 참고: 백엔드는 반드시 `vision space exam/step1/apps/api` 디렉터리에서 실행하세요. 임포트 경로 기준으로 실행되며, 다른 위치에서 실행하면 모듈 임포트 오류가 발생할 수 있습니다.

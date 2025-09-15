@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Iterable, List
 
-from config import load_config
+from app.config import load_config
 
 
 def _ensure_list(texts: Iterable[str]) -> List[str]:
@@ -42,4 +42,3 @@ class EmbeddingClient:
                 r = self._ollama.embeddings(model=self._ollama_model, prompt=t)
                 out.append(r["embedding"])  # type: ignore[index]
             return out
-

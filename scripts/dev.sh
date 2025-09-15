@@ -27,7 +27,7 @@ start_backend() {
   else
     PY="python"
   fi
-  exec_cmd=("${PY}" -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload)
+  exec_cmd=("${PY}" -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload)
   "${exec_cmd[@]}"
 }
 
@@ -60,4 +60,3 @@ case "${1:-}" in
     exit 1
     ;;
 esac
-

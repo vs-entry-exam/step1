@@ -49,7 +49,8 @@ class Config:
 
 def load_config() -> Config:
     # Load .env.api at the project root (step1/.env.api)
-    env_path = Path(__file__).resolve().parents[2] / ".env.api"
+    # This file lives under apps/api/app/, so step1 is parents[3]
+    env_path = Path(__file__).resolve().parents[3] / ".env.api"
     _load_env_file(env_path)
 
     allow_origins_raw = os.getenv("ALLOW_ORIGINS", "http://localhost:3000")

@@ -15,7 +15,7 @@ function Start-Backend {
   if (Test-Path ".venv/Scripts/Activate.ps1") {
     . .venv/Scripts/Activate.ps1
   }
-  uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+  uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 }
 
 function Start-Frontend {
@@ -26,7 +26,7 @@ function Start-Frontend {
 
 if ($All) {
   # Launch two consoles in parallel
-  $backendCmd = "& { Set-Location '$Root/apps/api'; if (Test-Path '.venv/Scripts/Activate.ps1') { . .venv/Scripts/Activate.ps1 }; uvicorn main:app --host 0.0.0.0 --port 8000 --reload }"
+  $backendCmd = "& { Set-Location '$Root/apps/api'; if (Test-Path '.venv/Scripts/Activate.ps1') { . .venv/Scripts/Activate.ps1 }; uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload }"
   $frontendCmd = "& { Set-Location '$Root/apps/web'; npm run dev }"
   # Choose available shell: prefer pwsh if installed, else fallback to Windows PowerShell
   $shell = if (Get-Command pwsh -ErrorAction SilentlyContinue) { 'pwsh' } else { 'powershell' }

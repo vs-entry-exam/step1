@@ -25,3 +25,4 @@ class DeleteRequest(BaseModel):
 
 class DeleteResponse(BaseModel):
     deleted: int
+

@@ -5,14 +5,17 @@ from hashlib import md5
 from pathlib import Path
 from typing import List, Dict, Any, Tuple
 
-from config import load_config
-from providers_embeddings import EmbeddingClient
+from app.config import load_config
+from app.core.providers.embeddings import EmbeddingClient
 
 
 def _persist_dir(base: str) -> str:
     p = Path(base)
     if not p.is_absolute():
-        p = (Path(__file__).resolve().parent / p).resolve()
+        # Resolve relative to apps/api directory for backward compatibility
+        # __file__ = apps/api/app/core/vectorstore.py → parents[2] = apps/api
+        anchor = Path(__file__).resolve().parents[2]
+        p = (anchor / p).resolve()
     p.mkdir(parents=True, exist_ok=True)
     return str(p)
 

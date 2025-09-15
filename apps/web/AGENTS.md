@@ -60,7 +60,7 @@
 - 로컬 개발 시 백엔드 CORS: `ALLOW_ORIGINS=http://localhost:3000`
 
 ## 로컬 실행 참고
-- 백엔드(별도): `uvicorn main:app --host 0.0.0.0 --port 8000 --reload`
+- 백엔드(별도): `uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload`
 - 프론트: `npm run dev`
 - 인제스트 예시: `curl -F "files=@../../data/sample.pdf" http://localhost:8000/ingest`
 - 질의 예시: `curl -X POST http://localhost:8000/ask -H 'Content-Type: application/json' -d '{"question":"sample.pdf 핵심 요약","top_k":4}'`
@@ -70,4 +70,3 @@
 - UI 컴포넌트화: 로딩 상태와 알림 표시를 일관화하기 위해 `components/LoadingButton`, `components/Notice`를 추가했습니다.
 - 페이지 코드 정리: `/`(질의)와 `/ingest`(업로드/삭제) 페이지가 공통 헬퍼/컴포넌트를 사용하도록 리팩토링하여 중복을 제거하고 가독성을 개선했습니다.
 - 용어 정비: 모드 토글 라벨을 Ask/RAG로, 업로드 섹션 타이틀을 Upload로 조정했습니다(라우트는 `/ingest` 유지).
-

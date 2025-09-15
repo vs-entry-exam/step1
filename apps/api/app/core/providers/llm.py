@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List, Dict
 
-from config import load_config
+from app.config import load_config
 
 
 class LLMClient:
@@ -38,4 +38,3 @@ class LLMClient:
         else:
             r = self._ollama.chat(model=self._model, messages=messages, options={"temperature": temperature})
             return r["message"]["content"]  # type: ignore[index]
-
