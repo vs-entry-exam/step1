@@ -131,18 +131,19 @@ NEXT_PUBLIC_API_BASE=http://localhost:8000
 - 인제스트: PDF(pypdf)/MD/TXT → 텍스트 클린 → 청킹(기본 1000/150) → 임베딩 → Chroma upsert(meta: title, page)
 - 질의: 질문 임베딩 → 유사도 검색(top_k) → 컨텍스트(stuff) → 프롬프트 → LLM 한국어 응답 → 출처 구성
 
-## E2E 테스트 방법
-인제스트(cURL)
+## 테스트 실행
+백엔드(pytest)
 ```
 cd "vision space exam/step1/apps/api"
-curl -F "files=@../../data/sample.pdf" http://localhost:8000/ingest
+pytest -q
+# 커버리지:
+pytest --cov=app --cov-report=term-missing
 ```
 
-질의(cURL)
+프론트엔드(Vitest)
 ```
-curl -X POST http://localhost:8000/ask \
-  -H "Content-Type: application/json" \
-  -d '{"question":"sample.pdf 핵심 요약","top_k":4}'
+cd "vision space exam/step1/apps/web"
+npm run test          # watch
+npm run test:run      # 1회 실행
+npm run test:coverage # 커버리지
 ```
-
-프론트에서 동일 흐름 실행 후 답변과 출처가 표시되는지 확인합니다.
