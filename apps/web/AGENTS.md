@@ -1,6 +1,6 @@
 # AGENTS.md (Web)
 
-목적: FastAPI RAG 백엔드와 통신하는 Next.js 프론트엔드의 현재 상태와 사용 방법을 정리한다.
+목적: FastAPI RAG 백엔드와 통신하는 Next.js 프론트엔드의 현재 상태와 사용 방법을 정리합니다.
 
 ## 범위
 - 디렉터리: `step1/apps/web`
@@ -17,7 +17,8 @@
 - `app/ingest/page.tsx`: Upload 페이지
 - `app/layout.tsx`, `app/globals.css`: 레이아웃/전역 스타일
 - `components/ModeToggle.tsx`: Ask/RAG 토글 컴포넌트
-- `lib/api.ts`: Axios 인스턴스 및 타입 정의
+- `components/LoadingButton.tsx`, `components/Notice.tsx`: 공통 UI 컴포넌트
+- `lib/api.ts`: Axios 인스턴스 및 타입/헬퍼
 
 ## 환경 변수
 - 파일: `.env.local` (로컬 개발에서 자동 로드)
@@ -39,11 +40,14 @@
   - 요청: `{ "question": string, "top_k"?: number }`
   - 응답: `{ "answer": string, "sources": [{ "title": string, "page"?: number, "score"?: number }] }`
   - 답변은 한국어이며 출처는 `[title:page]` 규칙을 따른다
+- `DELETE /docs` (application/json)
+  - 요청: `{ "title": string, "page"?: number }`
+  - 응답: `{ "deleted": number }`
 
 ## UI 동작
 - Upload
   - 파일 다중 선택 → `FormData`로 `/ingest` 전송 → `indexed: N` 표시
-  - 진행/에러 상태 표시
+  - 진행/에러 상태 표시, 삭제 패널에서 title(+page 옵션)로 삭제
 - Ask
   - 질문/`top_k` 입력 → `/ask` 호출 → 답변/출처 리스트 표시
   - `score`가 있을 경우 소수 3자리로 표기, 로딩/에러 상태 처리
@@ -61,5 +65,9 @@
 - 인제스트 예시: `curl -F "files=@../../data/sample.pdf" http://localhost:8000/ingest`
 - 질의 예시: `curl -X POST http://localhost:8000/ask -H 'Content-Type: application/json' -d '{"question":"sample.pdf 핵심 요약","top_k":4}'`
 
-## 향후 개선(메모)
-- 인제스트 진행률/상태 업데이트, 질문 히스토리, 출처 강조 렌더링, 모킹 API로 오프라인 개발 지원
+## Refactoring Notes (Web)
+- API 헬퍼 추가: `lib/api.ts`에 `askQuestion`, `ingestFiles`, `deleteDocs`, `toErrorMessage`를 도입해 각 페이지의 API 호출/에러 처리를 단순화했습니다.
+- UI 컴포넌트화: 로딩 상태와 알림 표시를 일관화하기 위해 `components/LoadingButton`, `components/Notice`를 추가했습니다.
+- 페이지 코드 정리: `/`(질의)와 `/ingest`(업로드/삭제) 페이지가 공통 헬퍼/컴포넌트를 사용하도록 리팩토링하여 중복을 제거하고 가독성을 개선했습니다.
+- 용어 정비: 모드 토글 라벨을 Ask/RAG로, 업로드 섹션 타이틀을 Upload로 조정했습니다(라우트는 `/ingest` 유지).
+
