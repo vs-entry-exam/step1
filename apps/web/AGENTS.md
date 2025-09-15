@@ -65,6 +65,8 @@
 - 인제스트 예시: `curl -F "files=@../../data/sample.pdf" http://localhost:8000/ingest`
 - 질의 예시: `curl -X POST http://localhost:8000/ask -H 'Content-Type: application/json' -d '{"question":"sample.pdf 핵심 요약","top_k":4}'`
 
+---
+
 ## Refactoring Notes (Web)
 - API 헬퍼 추가: `lib/api.ts`에 `askQuestion`, `ingestFiles`, `deleteDocs`, `toErrorMessage`를 도입해 각 페이지의 API 호출/에러 처리를 단순화했습니다.
 - UI 컴포넌트화: 로딩 상태와 알림 표시를 일관화하기 위해 `components/LoadingButton`, `components/Notice`를 추가했습니다.

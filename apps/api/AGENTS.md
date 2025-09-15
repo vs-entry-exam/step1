@@ -70,3 +70,18 @@ curl -X POST http://localhost:8000/ask \
 - PDF 임시파일 처리: 업로드된 PDF는 `tempfile.NamedTemporaryFile`을 사용해 안전하게 디스크에 기록 후 파싱, 종료 시 삭제. `routes_ingest.py`
 - 삭제 API 추가: `DELETE /docs`로 `title`(필수), `page`(선택) 기준 청크 삭제. VectorStore에 `delete_by_meta` 구현(페이지네이션으로 ids 수집 후 일괄 삭제). `routes_admin.py`, `vectorstore.py`
 - 설정 일원화: `config.py`에 `prompt_file` 필드 추가, CORS/청킹/모델 설정과 함께 로드.
+
+---
+
+## Tests (백엔드)
+- 도구: `pytest`, `fastapi.testclient`
+- 위치: `apps/api/tests`
+- 실행 예시:
+  ```bash
+  cd step1/apps/api
+  pytest -q
+  ```
+- 구현 내용:
+  - `conftest.py`: TestClient 생성, 임시 Chroma 디렉터리 설정, Embedding/LLM 모킹
+  - `test_health.py`: `/health` 200 OK
+  - `test_ingest_ask_delete.py`: 업로드→질의→삭제 시나리오 검증 및 422 경계 케이스
