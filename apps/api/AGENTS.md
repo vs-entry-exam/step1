@@ -47,7 +47,7 @@
 ## 실행/테스트
 ```bash
 cd step1/apps/api
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 # 인제스트
 curl -F "files=@../../data/sample.pdf" http://localhost:8000/ingest
