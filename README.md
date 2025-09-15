@@ -91,7 +91,7 @@ NEXT_PUBLIC_API_BASE=http://localhost:8000
 
 ## 백엔드 API (요약)
 - `GET /health` → `{ "status": "ok" }`
-- `POST /ingest` (multipart/form-data) → `{ "indexed": number }`
+- `POST /rag` (multipart/form-data) → `{ "indexed": number }`
 - `POST /ask` (application/json) → `{ "answer": string, "sources": [{ "title", "page"?, "score"? }] }`
 - `DELETE /docs` (application/json) → `{ "deleted": number }`
 

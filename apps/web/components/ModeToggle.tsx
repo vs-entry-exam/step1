@@ -5,23 +5,23 @@ import { usePathname, useRouter } from "next/navigation";
 export function ModeToggle() {
   const pathname = usePathname();
   const router = useRouter();
-  const mode = pathname?.startsWith("/ingest") ? "ingest" : "ask";
+  const mode = pathname?.startsWith("/agent") ? "agent" : "rag";
 
   return (
     <div className="seg" role="tablist" aria-label="Mode toggle">
       <button
         role="tab"
-        aria-selected={mode === "ask"}
-        className={mode === "ask" ? "active" : ""}
-        onClick={() => router.push("/")}
+        aria-selected={mode === "agent"}
+        className={mode === "agent" ? "active" : ""}
+        onClick={() => router.push("/agent")}
       >
-        Ask
+        Agent
       </button>
       <button
         role="tab"
-        aria-selected={mode === "ingest"}
-        className={mode === "ingest" ? "active" : ""}
-        onClick={() => router.push("/ingest")}
+        aria-selected={mode === "rag"}
+        className={mode === "rag" ? "active" : ""}
+        onClick={() => router.push("/rag")}
       >
         RAG
       </button>

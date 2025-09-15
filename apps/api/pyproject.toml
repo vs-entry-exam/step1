@@ -1,7 +1,7 @@
 [tool.black]
 line-length = 100
 target-version = ["py311", "py310"]
-include = "\.(py)$"
+include = '\\.py$'
 # Black expects a single regex string for exclude; use a portable pattern
 exclude = '''
 /(\.venv|build|dist|chroma|__pycache__)/

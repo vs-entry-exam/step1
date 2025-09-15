@@ -8,13 +8,13 @@
 - 스택: Next.js(App Router, TypeScript), Axios
 
 ## MVP 기능
-- `/ingest`(Upload): PDF/MD/TXT 다중 파일 업로드 → `indexed: N` 표시
-- `/`(Ask): 질문 입력 → 한국어 답변과 출처 리스트(`[title:page]`) 표시
+- `/rag`: 문서 업로드/삭제(Chroma 인덱스 관리)
+- `/agent`: 질문 입력 → 한국어 답변(Agent; Retrieval Tool 사용)
 - 헤더 토글: Ask ↔ RAG 전환
 
 ## 디렉터리 구조(주요)
 - `app/page.tsx`: Ask 페이지
-- `app/ingest/page.tsx`: Upload/삭제 페이지
+- `app/rag/page.tsx`: Upload/삭제 페이지
 - `app/layout.tsx`, `app/globals.css`: 레이아웃/전역 스타일
 - `components/ModeToggle.tsx`: Ask/RAG 토글 컴포넌트
 - `components/LoadingButton.tsx`, `components/Notice.tsx`: 공통 UI 컴포넌트
@@ -31,9 +31,8 @@
 - 빌드: `npm run build`
 - 실행: `npm start -p 3000`
 
-## 백엔드 계약(현 구현 가정)
 - `GET /health` → `{ "status": "ok" }`
-- `POST /ingest` (multipart/form-data)
+- `POST /rag` (multipart/form-data)
   - 필드: `files` (다중 허용)
   - 응답: `{ "indexed": number }`
 - `POST /ask` (application/json)
@@ -42,12 +41,14 @@
 - `DELETE /docs` (application/json)
   - 요청: `{ "title": string, "page"?: number }`
   - 응답: `{ "deleted": number }`
+- `POST /agent` (application/json)
+  - 요청: `{ "question": string, "top_k"?: number }`
+  - 응답: `{ "answer": string, "sources": [] }`
 
 ## UI 동작
-- Upload: 파일 다중 선택 → `/ingest` 업로드 → `indexed: N` 표시, 에러/로딩 상태 표시
-- Delete: title(필수) + page(선택) 입력 → `/docs` 호출 → `deleted: N` 표시
-- Ask: 질문/`top_k` 입력 → `/ask` 호출 → 답변/출처 리스트 표시, 로딩/에러 처리
-- 접근성: `Notice`는 kind에 따라 `role="alert|status"`를 제공
+- RAG(/rag): 파일 다중 선택 업로드 → `indexed: N` 표시, title(+page)로 삭제 → `deleted: N`
+- Agent(/agent): 질문/`top_k` 입력 → `/agent` 호출 → 답변 표시(필요 시 RAG Retrieval Tool 사용)
+- 접근성: `Notice`는 kind에 따라 `role="alert|status"` 제공
 
 ## Tests (Web)
 - 도구: Vitest + React Testing Library(jsdom), jest-dom 매처
@@ -60,7 +61,7 @@
   - `tests/api.test.ts`: API 헬퍼(axios 모킹)
   - `tests/components.test.tsx`: LoadingButton/Notice
   - `tests/home.page.test.tsx`: Ask 페이지 상호작용
-  - `tests/ingest.page.test.tsx`: Upload 페이지 삭제 유효성
+- `tests/rag.page.test.tsx`: Upload 페이지 삭제 유효성
 
 ## Code Style (Web)
 - 포맷터: Prettier (`.prettierrc.json`)
@@ -71,3 +72,16 @@
 - 동시 실행(개발):
   - Windows: `powershell -File step1/scripts/dev.ps1 -All`
   - Linux/macOS: `step1/scripts/dev.sh --all`
+
+---
+
+## Refactoring Guidelines (Web)
+- 라우팅/페이지: 기본 `/agent`, 업로드/삭제는 `/rag`에 유지. 페이지는 `app/` 하위에 배치하고 역할을 혼합하지 않는다.
+- 컴포넌트화: 반복되는 UI는 `components/`로 분리(예: LoadingButton, Notice). 페이지 내 중복 로직은 함수/훅으로 추출 고려.
+- 임포트 규칙: `import React, { useX } from 'react';` 한 줄 사용. 동일 모듈 중복 임포트 금지(ESLint `no-duplicate-imports`).
+- API 계층: 네트워크 호출은 `lib/api.ts`에만 구현(askQuestion, ingestFiles, deleteDocs, toErrorMessage 등 헬퍼 사용).
+- 상태관리: 단순 상태는 `useState`. 복잡하면 커스텀 훅으로 분리. 전역 상태 도입은 필요 시 검토.
+- 접근성: 폼 요소에 `label` 연결, 알림은 `Notice`로 렌더(kind별 `role=alert|status`). 버튼은 의미에 맞게 `<button>` 사용.
+- 스타일: 전역 토큰(`globals.css`) 우선 사용. 패널/레이아웃 클래스 재사용, 과도한 인라인 스타일 지양.
+- 테스트: 새 페이지/컴포넌트는 RTL+Vitest로 테스트. axios는 모킹, 텍스트 일치보다는 역할/상태 기반 매칭 권장.
+- 국제화/문자셋: 기본 한글 UI. 테스트는 한글 문자열 의존 최소화(정규식/역할 사용). 모든 파일은 UTF‑8 저장.

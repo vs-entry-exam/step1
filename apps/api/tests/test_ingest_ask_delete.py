@@ -3,7 +3,7 @@ from io import BytesIO
 
 def _upload_txt(client, name: str, content: str):
     files = [("files", (name, BytesIO(content.encode("utf-8")), "text/plain"))]
-    r = client.post("/ingest", files=files)
+    r = client.post("/rag", files=files)
     assert r.status_code == 200
     data = r.json()
     assert "indexed" in data and data["indexed"] >= 1
@@ -33,4 +33,3 @@ def test_ingest_txt_then_ask_and_delete(client):
 def test_ask_with_empty_question_returns_422(client):
     r = client.post("/ask", json={"question": "", "top_k": 4})
     assert r.status_code == 422
-

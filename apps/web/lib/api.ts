@@ -47,7 +47,7 @@ export async function askQuestion(payload: AskRequest) {
 export async function ingestFiles(files: FileList | File[]): Promise<IngestResponse> {
   const form = new FormData();
   Array.from(files as File[]).forEach((f) => form.append('files', f));
-  const { data } = await api.post<IngestResponse>('/ingest', form, {
+  const { data } = await api.post<IngestResponse>('/rag', form, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
   return data;
@@ -56,5 +56,12 @@ export async function ingestFiles(files: FileList | File[]): Promise<IngestRespo
 export async function deleteDocs(payload: DeleteRequest) {
   // Axios supports body on DELETE via the `data` option
   const { data } = await api.delete<DeleteResponse>('/docs', { data: payload, headers: { 'Content-Type': 'application/json' } });
+  return data;
+}
+
+export async function askAgent(payload: AskRequest): Promise<AskResponse> {
+  const { data } = await api.post<AskResponse>('/agent', payload, {
+    headers: { 'Content-Type': 'application/json' },
+  });
   return data;
 }

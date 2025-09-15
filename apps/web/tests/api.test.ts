@@ -18,14 +18,14 @@ describe('lib/api', () => {
     expect(axiosMock._post).toHaveBeenCalledWith('/ask', { question: 'q', top_k: 3 }, expect.any(Object));
   });
 
-  it('ingestFiles posts multipart to /ingest', async () => {
+  it('ingestFiles posts multipart to /rag', async () => {
     const axiosMock: any = await import('axios');
     axiosMock._post.mockResolvedValueOnce({ data: { indexed: 2 } });
     const { ingestFiles } = await import('../lib/api');
     const file = new File([new Blob(['abc'])], 'a.txt', { type: 'text/plain' });
     const res = await ingestFiles([file]);
     expect(res.indexed).toBe(2);
-    expect(axiosMock._post).toHaveBeenCalledWith('/ingest', expect.any(FormData), expect.any(Object));
+    expect(axiosMock._post).toHaveBeenCalledWith('/rag', expect.any(FormData), expect.any(Object));
   });
 
   it('deleteDocs sends body in DELETE', async () => {

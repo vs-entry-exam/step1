@@ -1,10 +1,11 @@
 fastapi
 uvicorn[standard]
 langchain
+langchain-community
+langchain-openai
 chromadb
 pypdf
 python-multipart
 openai
 tiktoken
 ollama
-

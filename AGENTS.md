@@ -11,11 +11,11 @@
 ## 개요
 - 목표: 문서 기반 RAG QA MVP(업로드→인덱싱→검색→응답, 출처 포함)
 - 스택: Next.js(App Router) · FastAPI · LangChain · ChromaDB · OpenAI/Ollama
-- 라벨: Ask ↔ RAG(헤더 토글), Upload(/ingest)
+- 라벨: Agent ↔ RAG(헤더 토글), Upload(/rag)
 
 ## 아키텍처
-- 프론트엔드: `/ingest` 업로드/삭제 UI, `/` 질문 UI
-- 백엔드: `/ingest` 파일 수신→파이프라인→Chroma upsert, `/ask` 검색→LLM 답변, `DELETE /docs` 삭제
+- 프론트엔드: `/rag` 업로드/삭제 UI, `/agent` 질문 UI
+- 백엔드: `/rag` 파일 수신→파이프라인→Chroma upsert, `/ask` 검색→LLM 답변, `DELETE /docs` 삭제
 - 저장소: ChromaDB 로컬 퍼시스트(`step1/chroma`)
 - 프롬프트: 파일 기반 로딩(캐시) + 폴백 정책
 
@@ -43,10 +43,9 @@ step1/
 - `CHROMA_PERSIST_DIR` 상대경로는 `apps/api` 기준
 
 ## API 요약
-- `GET /health`, `POST /ingest`, `POST /ask`, `DELETE /docs`
+- `GET /health`, `POST /rag`, `POST /ask`, `DELETE /docs`
 - 상세 계약/구현: `apps/api/AGENTS.md`
 
 ## 테스트 개요
 - 백엔드(pytest): venv 활성화 후 `python -m pytest -q`
 - 프론트(Vitest): `cd step1/apps/web && npm run test:run`
-
