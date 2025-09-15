@@ -52,7 +52,7 @@ class _FakeLLMClient:
 
 @pytest.fixture(autouse=True)
 def _patch_providers(monkeypatch):
-    # Patch providers used by VectorStore and /ask
+    # Patch providers used by VectorStore and /agent
     import app.core.providers.embeddings as emb_mod
     import app.core.providers.llm as llm_mod
 
@@ -65,4 +65,3 @@ def _patch_providers(monkeypatch):
 def client():
     from app.main import app
     return TestClient(app)
-
