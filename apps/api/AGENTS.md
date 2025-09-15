@@ -12,7 +12,7 @@
 - 인제스트 파이프라인: `routes_ingest.py`, `utils_parse.py`, `vectorstore.py`, `providers_embeddings.py`
 - 질의 파이프라인: `routes_ask.py`, `providers_llm.py`
 - 설정/스키마: `config.py`, `models.py`
-- 프롬프트: `step1/rag/prompts/answer.txt`
+// 프롬프트는 코드 내 정책 문자열로 관리합니다.
 
 ## 주요 파일
 - `main.py`: FastAPI 초기화, CORS, `/health`, 라우터 포함
@@ -61,4 +61,3 @@ curl -X POST http://localhost:8000/ask \
 ## 비고
 - 백엔드는 반드시 `step1/apps/api` 디렉터리에서 실행하세요(임포트 경로 기준).
 - 기본값은 OpenAI를 사용합니다. Ollama 사용 시 서버 실행과 모델 pull이 필요합니다.
-

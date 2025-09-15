@@ -17,7 +17,7 @@
 - 프론트엔드(Next.js): `/ingest` 업로드 UI, `/` 질문 UI, Ask/Ingest 토글.
 - 백엔드(FastAPI): `/ingest` 파일 수신→파싱·청킹·임베딩→Chroma upsert, `/ask` 검색→LLM 답변 생성.
 - 스토리지: ChromaDB 로컬 퍼시스트(`step1/chroma`).
-- 프롬프트: `step1/rag/prompts/answer.txt` 정책(컨텍스트 밖은 모른다고 답변, 한국어, 출처 포함).
+// 프롬프트는 코드 내 정책 문자열로 관리(컨텍스트 밖은 모른다고 답변, 한국어, 출처 포함).
 
 ### 3) 폴더 구조(주요)
 ```
@@ -26,7 +26,6 @@ step1/
 │  ├─ web/         # Next.js 프론트엔드 (Ask/Ingest UI)
 │  └─ api/         # FastAPI 백엔드 (/ingest, /ask)
 ├─ rag/
-│  └─ prompts/     # 답변 프롬프트 템플릿
 ├─ chroma/         # ChromaDB 퍼시스트 디렉터리
 ├─ data/           # 샘플 문서
 ├─ .env.api        # 백엔드 환경변수

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import List, Dict
 
 from fastapi import APIRouter, HTTPException
@@ -44,11 +45,20 @@ async def ask(req: AskRequest):
         # No context found; follow prompt policy
         return AskResponse(answer="문서에서 답을 찾을 수 없습니다.", sources=[])
 
-    # Load prompt template (fallback included)
-    prompt = (
-        "Answer ONLY with the provided context. If missing, say you don't know.\n"
-        "Always include Korean answer and cite sources as [title:page]."
-    )
+    # Load prompt template from file with safe fallback
+    def _load_prompt() -> str:
+        # step1 root = .../apps/api/../../ -> parent[2]
+        root = Path(__file__).resolve().parents[2]
+        prompt_path = root / "rag" / "prompts" / "answer.txt"
+        try:
+            return prompt_path.read_text(encoding="utf-8").strip()
+        except Exception:
+            return (
+                "Answer ONLY with the provided context. If missing, say you don't know.\n"
+                "Always include Korean answer and cite sources as [title:page]."
+            )
+
+    prompt = _load_prompt()
     # messages
     system = prompt
     user = (
@@ -74,4 +84,3 @@ async def ask(req: AskRequest):
         sources.append(SourceItem(title=m.get("title", ""), page=m.get("page"), score=score))
 
     return AskResponse(answer=answer.strip(), sources=sources)
-

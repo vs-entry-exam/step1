@@ -19,7 +19,6 @@ step1/
 │  ├─ web/            # Next.js 프론트엔드
 │  └─ api/            # FastAPI 백엔드
 ├─ rag/
-│  └─ prompts/        # 답변 프롬프트 템플릿
 ├─ chroma/            # ChromaDB 퍼시스트 디렉터리
 ├─ data/              # 샘플 문서
 ├─ .env.api           # 백엔드 환경변수
