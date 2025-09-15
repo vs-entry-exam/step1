@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from fastapi import APIRouter, HTTPException
 
@@ -30,6 +31,46 @@ def build_context(docs: List[str], metas: List[Dict], max_chars: int = 4000) -> 
     return "".join(parts)
 
 
+# Prompt loading with simple mtime-based cache
+_PROMPT_CACHE: Optional[dict] = None
+
+
+def _project_root() -> Path:
+    # step1 root = .../apps/api/../../ -> parent[2]
+    return Path(__file__).resolve().parents[2]
+
+
+def _resolve_prompt_path() -> Path:
+    # Allow override via environment variable PROMPT_FILE or PROMPT_PATH
+    env_path = os.getenv("PROMPT_FILE") or os.getenv("PROMPT_PATH")
+    root = _project_root()
+    if env_path:
+        p = Path(env_path)
+        if not p.is_absolute():
+            p = (root / p).resolve()
+        return p
+    return root / "rag" / "prompts" / "answer.txt"
+
+
+def load_prompt() -> str:
+    global _PROMPT_CACHE
+    p = _resolve_prompt_path()
+    try:
+        stat = p.stat()
+        mtime = stat.st_mtime
+        if _PROMPT_CACHE and _PROMPT_CACHE.get("path") == str(p) and _PROMPT_CACHE.get("mtime") == mtime:
+            return _PROMPT_CACHE["content"]  # type: ignore[index]
+        content = p.read_text(encoding="utf-8").strip()
+        _PROMPT_CACHE = {"path": str(p), "mtime": mtime, "content": content}
+        return content
+    except Exception:
+        # Safe fallback if file missing or unreadable
+        return (
+            "Answer ONLY with the provided context. If missing, say you don't know.\n"
+            "Always include Korean answer and cite sources as [title:page]."
+        )
+
+
 @router.post("/ask", response_model=AskResponse)
 async def ask(req: AskRequest):
     if not req.question.strip():
@@ -45,20 +86,8 @@ async def ask(req: AskRequest):
         # No context found; follow prompt policy
         return AskResponse(answer="문서에서 답을 찾을 수 없습니다.", sources=[])
 
-    # Load prompt template from file with safe fallback
-    def _load_prompt() -> str:
-        # step1 root = .../apps/api/../../ -> parent[2]
-        root = Path(__file__).resolve().parents[2]
-        prompt_path = root / "rag" / "prompts" / "answer.txt"
-        try:
-            return prompt_path.read_text(encoding="utf-8").strip()
-        except Exception:
-            return (
-                "Answer ONLY with the provided context. If missing, say you don't know.\n"
-                "Always include Korean answer and cite sources as [title:page]."
-            )
-
-    prompt = _load_prompt()
+    # Load prompt (file-based with caching; falls back to default policy)
+    prompt = load_prompt()
     # messages
     system = prompt
     user = (
