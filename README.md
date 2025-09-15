@@ -49,6 +49,27 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 참고: 백엔드는 반드시 `vision space exam/step1/apps/api` 디렉터리에서 실행하세요. 임포트 경로 기준으로 실행되며, 다른 위치에서 실행하면 모듈 임포트 오류가 발생할 수 있습니다.
 ```
 
+## 빠른 실행 스크립트(의존성 설치 완료 시)
+이미 가상환경 생성 및 `pip install -r requirements.txt`, 프론트의 `npm install`까지 끝난 상태라면, 루트 스크립트로 손쉽게 실행할 수 있습니다.
+
+PowerShell에서:
+```
+cd "vision space exam/step1"
+# 백엔드와 프론트 동시에(각각 새 터미널 창)
+pwsh -File scripts/dev.ps1 -All
+
+# 백엔드만
+pwsh -File scripts/dev.ps1 -Backend
+
+# 프론트만
+pwsh -File scripts/dev.ps1 -Frontend
+```
+
+주의: 실행 정책 오류가 나면 현재 세션 한정으로 허용하세요.
+```
+Set-ExecutionPolicy -Scope Process RemoteSigned
+```
+
 ## 환경변수
 백엔드(`step1/.env.api`)
 ```
