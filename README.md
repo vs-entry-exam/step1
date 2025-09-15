@@ -56,13 +56,20 @@ PowerShell에서:
 ```
 cd "vision space exam/step1"
 # 백엔드와 프론트 동시에(각각 새 터미널 창)
-pwsh -File scripts/dev.ps1 -All
+# Windows PowerShell 내에서:
+powershell -File .\scripts\dev.ps1 -All
+# 또는 현재 세션에서 실행:
+./scripts/dev.ps1 -All
 
 # 백엔드만
-pwsh -File scripts/dev.ps1 -Backend
+powershell -File .\scripts\dev.ps1 -Backend
+# 또는
+./scripts/dev.ps1 -Backend
 
 # 프론트만
-pwsh -File scripts/dev.ps1 -Frontend
+powershell -File .\scripts\dev.ps1 -Frontend
+# 또는
+./scripts/dev.ps1 -Frontend
 ```
 
 주의: 실행 정책 오류가 나면 현재 세션 한정으로 허용하세요.
