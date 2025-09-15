@@ -97,3 +97,29 @@ npm run test:coverage # 커버리지
 ## 참고
 - 프롬프트: `.env.api`의 `PROMPT_FILE|PROMPT_PATH`로 파일 기반 프롬프트를 지정할 수 있습니다(미지정/실패 시 내장 정책으로 폴백).
 - 인덱스 경로: `CHROMA_PERSIST_DIR` 상대경로는 `apps/api` 기준으로 해석됩니다.
+
+## 스크립트로 실행(의존성 설치 완료 시)
+루트 스크립트로 백엔드/프론트를 손쉽게 실행할 수 있습니다.
+
+Windows PowerShell
+```
+cd "vision space exam/step1"
+# 백엔드와 프론트 동시에(각각 새 터미널 창)
+powershell -File .\scripts\dev.ps1 -All
+# 백엔드만 / 프론트만
+powershell -File .\scripts\dev.ps1 -Backend
+powershell -File .\scripts\dev.ps1 -Frontend
+
+# 실행 정책 오류 시(현재 세션 한정 허용)
+Set-ExecutionPolicy -Scope Process RemoteSigned
+```
+
+Linux / macOS (Bash)
+```
+cd "vision space exam/step1"
+chmod +x scripts/dev.sh
+# 동시에 실행 / 개별 실행
+./scripts/dev.sh --all
+./scripts/dev.sh --backend
+./scripts/dev.sh --frontend
+```
