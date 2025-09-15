@@ -17,3 +17,11 @@ class AskResponse(BaseModel):
     answer: str
     sources: List[SourceItem] = []
 
+
+class DeleteRequest(BaseModel):
+    title: str
+    page: Optional[int] = None
+
+
+class DeleteResponse(BaseModel):
+    deleted: int

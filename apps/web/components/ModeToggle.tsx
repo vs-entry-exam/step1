@@ -23,9 +23,8 @@ export function ModeToggle() {
         className={mode === "ingest" ? "active" : ""}
         onClick={() => router.push("/ingest")}
       >
-        Ingest
+        RAG
       </button>
     </div>
   );
 }
-

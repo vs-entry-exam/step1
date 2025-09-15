@@ -70,3 +70,45 @@ class VectorStore:
         distances = (out.get("distances") or [[]])[0]
         return VSResult(documents=documents, metadatas=metadatas, distances=distances)
 
+    def delete_by_meta(self, title: str, page: int | None = None) -> int:
+        where = {"title": title}
+        if page is not None:
+            where["page"] = page
+        # Fetch matching ids with pagination (some versions of Chroma apply a default limit)
+        all_ids: list[str] = []
+        offset = 0
+        limit = 1000
+        try:
+            while True:
+                got = self.collection.get(  # type: ignore[attr-defined]
+                    where=where,
+                    include=["metadatas"],  # keep payload small; ids are always included
+                    limit=limit,
+                    offset=offset,
+                )
+                ids = got.get("ids") or []
+                if not ids:
+                    break
+                all_ids.extend(ids)
+                offset += len(ids)
+            if all_ids:
+                self.collection.delete(ids=all_ids)
+            else:
+                # As a fallback, attempt where-based delete anyway
+                self.collection.delete(where=where)
+            return len(all_ids)
+        except Exception:
+            try:
+                self.collection.delete(where=where)
+            except Exception:
+                pass
+            return 0
+
+    def delete_all(self) -> None:
+        # Drop and recreate the collection
+        name = getattr(self.collection, "name", "docs")
+        try:
+            self.client.delete_collection(name)
+        except Exception:
+            pass
+        self.collection = self.client.get_or_create_collection(name=name)

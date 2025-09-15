@@ -10,13 +10,13 @@
 ## MVP 기능
 - `/ingest`: PDF/MD/TXT 다중 파일 업로드 → `indexed: N` 표시
 - `/`(Ask): 질문 입력 → 한국어 답변과 출처 리스트(`[title:page]`) 표시
-- 헤더 토글: Ask ↔ Ingest 전환
+- 헤더 토글: Ask ↔ RAG 전환
 
 ## 디렉터리 구조(주요)
 - `app/page.tsx`: Ask 페이지
-- `app/ingest/page.tsx`: Ingest 페이지
+- `app/ingest/page.tsx`: Upload 페이지
 - `app/layout.tsx`, `app/globals.css`: 레이아웃/전역 스타일
-- `components/ModeToggle.tsx`: Ask/Ingest 토글 컴포넌트
+- `components/ModeToggle.tsx`: Ask/RAG 토글 컴포넌트
 - `lib/api.ts`: Axios 인스턴스 및 타입 정의
 
 ## 환경 변수
@@ -41,7 +41,7 @@
   - 답변은 한국어이며 출처는 `[title:page]` 규칙을 따른다
 
 ## UI 동작
-- Ingest
+- Upload
   - 파일 다중 선택 → `FormData`로 `/ingest` 전송 → `indexed: N` 표시
   - 진행/에러 상태 표시
 - Ask

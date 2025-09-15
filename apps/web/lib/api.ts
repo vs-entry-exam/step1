@@ -20,3 +20,17 @@ export interface AskResponse {
   sources: SourceItem[];
 }
 
+export interface DeleteRequest {
+  title: string;
+  page?: number;
+}
+
+export interface DeleteResponse {
+  deleted: number;
+}
+
+export async function deleteDocs(payload: DeleteRequest) {
+  // Axios supports body on DELETE via the `data` option
+  const { data } = await api.delete<DeleteResponse>('/docs', { data: payload, headers: { 'Content-Type': 'application/json' } });
+  return data;
+}

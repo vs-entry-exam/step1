@@ -26,9 +26,11 @@ def health():
 try:
     from routes_ingest import router as ingest_router
     from routes_ask import router as ask_router
+    from routes_admin import router as admin_router
 
     app.include_router(ingest_router)
     app.include_router(ask_router)
+    app.include_router(admin_router)
 except Exception:
     # During early scaffolding, routes may be missing; ignore.
     pass
