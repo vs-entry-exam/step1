@@ -1,95 +1,45 @@
-﻿# Step1 — RAG QA MVP
+# Step1 · RAG QA MVP
 
-문서 기반 RAG QA 최소 기능(MVP)을 구현한 프로젝트입니다. 업로드한 문서(PDF/MD/TXT)를 인덱싱하고, 질문에 대해 출처를 포함한 한국어 답변을 제공합니다.
+문서 기반 RAG QA 최소 기능을 제공합니다. 업로드한 문서를 색인하고, 웹 UI에서 질문하면 한글 답변과 출처(`[title:page]`)를 함께 반환합니다.
 
 ## 개요
 - 스택: Next.js(App Router, TypeScript) · FastAPI · LangChain · ChromaDB
-- LLM/임베딩: OpenAI 또는 Ollama(서로 교체 가능)
-- 목표: 업로드 → 임베딩/인덱싱 → 유사도 검색 → LLM 응답(출처 포함)
+- LLM/임베딩: OpenAI 또는 Ollama
 
-## 주요 기능(MVP)
-- 업로드(`/ingest`): 여러 문서 업로드 → 파싱/클린/청킹 → 임베딩 → Chroma upsert → `indexed: N`
-- 질의(`/ask`): 질문 + `top_k` → 유사도 검색 → 한국어 답변 + 출처(`[title:page]`)
-- 프론트 헤더 토글: Ask ↔ RAG 페이지 전환
-
-## 폴더 구조(주요)
+## 디렉터리
 ```
 step1/
 ├─ apps/
-│  ├─ web/            # Next.js 프론트엔드
-│  └─ api/            # FastAPI 백엔드
+│  ├─ web/        # Next.js 프론트
+│  └─ api/        # FastAPI 백엔드
 ├─ rag/
-├─ chroma/            # ChromaDB 퍼시스트 디렉터리
-├─ data/              # 샘플 문서
-├─ .env.api           # 백엔드 환경변수
+│  └─ prompts/    # 프롬프트 템플릿
+├─ chroma/        # ChromaDB 영속 디렉터리
+├─ .env.api       # 백엔드 환경변수
 └─ README.md
 ```
 
 ## 빠른 시작
-프론트엔드
-```
-cd "vision space exam/step1/apps/web"
-npm install
-npm run dev
-# 브라우저: http://localhost:3000
-```
-
 백엔드
 ```
-cd "vision space exam/step1/apps/api"
+cd step1/apps/api
 python -m venv .venv
-. .venv/Scripts/Activate.ps1   # Windows PowerShell
+. .venv/Scripts/Activate.ps1   # Windows
 # source .venv/bin/activate    # macOS/Linux
-python -m pip install -U pip
 pip install -r requirements.txt
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 # 헬스체크: http://localhost:8000/health → {"status":"ok"}
-
-참고: 백엔드는 반드시 `vision space exam/step1/apps/api` 디렉터리에서 실행하세요. 임포트 경로 기준으로 실행되며, 다른 위치에서 실행하면 모듈 임포트 오류가 발생할 수 있습니다.
 ```
 
-## 빠른 실행 스크립트(의존성 설치 완료 시)
-이미 가상환경 생성 및 `pip install -r requirements.txt`, 프론트의 `npm install`까지 끝난 상태라면, 루트 스크립트로 손쉽게 실행할 수 있습니다.
-
-Windows PowerShell:
+프론트
 ```
-cd "vision space exam/step1"
-# 백엔드와 프론트 동시에(각각 새 터미널 창)
-powershell -File .\scripts\dev.ps1 -All
-# 또는 현재 세션에서 실행:
-./scripts/dev.ps1 -All
-
-# 백엔드만
-powershell -File .\scripts\dev.ps1 -Backend
-# 또는
-./scripts/dev.ps1 -Backend
-
-# 프론트만
-powershell -File .\scripts\dev.ps1 -Frontend
-# 또는
-./scripts/dev.ps1 -Frontend
+cd step1/apps/web
+npm install
+npm run dev -p 3000
+# http://localhost:3000
 ```
 
-주의: 실행 정책 오류가 나면 현재 세션 한정으로 허용하세요.
-```
-Set-ExecutionPolicy -Scope Process RemoteSigned
-```
-
-Linux / macOS (Bash):
-```
-cd "vision space exam/step1"
-chmod +x scripts/dev.sh
-# 백엔드와 프론트 동시에 (한 터미널에서 병렬 실행)
-./scripts/dev.sh --all
-
-# 백엔드만
-./scripts/dev.sh --backend
-
-# 프론트만
-./scripts/dev.sh --frontend
-```
-
-## 환경변수
+## 환경 변수
 백엔드(`step1/.env.api`)
 ```
 LLM_PROVIDER=openai            # openai | ollama
@@ -106,60 +56,36 @@ CHROMA_PERSIST_DIR=../../chroma
 CHUNK_SIZE=1000
 CHUNK_OVERLAP=150
 ALLOW_ORIGINS=http://localhost:3000
-PROMPT_FILE=rag/prompts/answer.txt   # 선택: 프롬프트 파일 경로 오버라이드(PROMPT_PATH도 지원)
 ```
 
-프론트엔드(`step1/apps/web/.env.local`)
+프론트(`step1/apps/web/.env.local`)
 ```
 NEXT_PUBLIC_API_BASE=http://localhost:8000
 ```
 
-## 백엔드 API
+## API 요약
 - `GET /health` → `{ "status": "ok" }`
-- `POST /ingest` (multipart/form-data)
-  - 필드: `files` (파일 다중 허용)
-  - 응답: `{ "indexed": number }`
-- `POST /ask` (application/json)
-  - 요청: `{ "question": string, "top_k"?: number }`
-  - 응답: `{ "answer": string, "sources": [{ "title": string, "page"?: number, "score"?: number }] }`
-- `DELETE /docs` (application/json)
-  - 요청: `{ "title": string, "page"?: number }`
-  - 응답: `{ "deleted": number }`
+- `POST /ingest` (multipart) → `{ indexed: number }`
+- `POST /ask` (JSON) → `{ answer: string, sources: [{ title, page?, score? }] }`
+- `DELETE /docs` (JSON) → `{ deleted: number }`
 
-## 프론트엔드 UI
-- `/ingest`(Upload): 파일 선택·업로드 → 인덱싱 결과(`indexed: N`)와 에러/로딩 표시
-- `/`: 질문·`top_k` 입력 → 답변과 출처 리스트(`[title:page]`, score는 소수 3자리 표시)
-- 헤더: Ask ↔ RAG 토글 버튼
-
-## RAG 파이프라인
-- 인제스트: PDF(pypdf)/MD/TXT → 텍스트 클린 → 청킹(기본 1000/150) → 임베딩 → Chroma upsert(meta: title, page)
-- 질의: 질문 임베딩 → 유사도 검색(top_k) → 컨텍스트(stuff) → 프롬프트 → LLM 한국어 응답 → 출처 구성
-
-## 테스트 실행
-백엔드(pytest)
+## 로컬 테스트
 ```
-cd "vision space exam/step1/apps/api"
-pytest -q
-# 커버리지:
-pytest --cov=app --cov-report=term-missing
+# 업로드(샘플)
+cd step1/apps/api
+curl -F "files=@../../data/sample.pdf" http://localhost:8000/ingest
+
+# 질의
+curl -X POST http://localhost:8000/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question":"sample.pdf 핵심 요약","top_k":4}'
 ```
 
-프론트엔드(Vitest)
-```
-cd "vision space exam/step1/apps/web"
-npm run test          # watch
-npm run test:run      # 1회 실행
-npm run test:coverage # 커버리지
-```
+## 체크리스트
+- [/ingest] 업로드 후 “indexed: N” 표시
+- [/ask] 한글 답변 + [title:page] 출처 포함
+- PDF/MD/TXT 각각 1개 이상 동작 확인
 
-## 코드 스타일
-- Web(Prettier/ESLint)
-  - 포맷: `npm run format`
-  - 린트: `npm run lint` / `npm run lint:fix`
-- API(Black/Isort/Ruff)
-  - venv 활성화 후 설치: `pip install -r requirements-dev.txt`
-  - 포맷/정렬/린트: `isort . && black . && ruff check . --fix`
-
-## 참고
-- 프롬프트: `.env.api`의 `PROMPT_FILE|PROMPT_PATH`로 파일 기반 프롬프트를 지정할 수 있습니다(미지정 시 기본 파일 사용, 실패 시 내장 정책으로 폴백).
-- 인덱스 경로: `CHROMA_PERSIST_DIR` 상대경로는 `apps/api` 기준으로 해석됩니다. 운영에서는 절대경로 권장.
+## 주의
+- 프론트에 API 키를 절대 노출하지 않습니다.
+- 인덱싱과 질의에 동일한 임베딩 모델을 사용하세요.
