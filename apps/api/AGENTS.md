@@ -61,3 +61,12 @@ curl -X POST http://localhost:8000/ask \
 ## 비고
 - 백엔드는 반드시 `step1/apps/api` 디렉터리에서 실행하세요(임포트 경로 기준).
 - 기본값은 OpenAI를 사용합니다. Ollama 사용 시 서버 실행과 모델 pull이 필요합니다.
+
+---
+
+## Refactoring Notes (최근 정리)
+- 스키마 기본값 안전화: `AskResponse.sources`를 `Field(default_factory=list)`로 변경해 가변 기본값 이슈 예방. `apps/api/models.py`
+- 프롬프트 로딩 정비: `routes_ask.py`에 파일 기반 프롬프트 로더를 함수로 분리(`load_prompt`), mtime 캐시 적용. `.env.api`의 `PROMPT_FILE|PROMPT_PATH`(config 필드 `prompt_file`)로 경로 오버라이드 가능.
+- PDF 임시파일 처리: 업로드된 PDF는 `tempfile.NamedTemporaryFile`을 사용해 안전하게 디스크에 기록 후 파싱, 종료 시 삭제. `routes_ingest.py`
+- 삭제 API 추가: `DELETE /docs`로 `title`(필수), `page`(선택) 기준 청크 삭제. VectorStore에 `delete_by_meta` 구현(페이지네이션으로 ids 수집 후 일괄 삭제). `routes_admin.py`, `vectorstore.py`
+- 설정 일원화: `config.py`에 `prompt_file` 필드 추가, CORS/청킹/모델 설정과 함께 로드.

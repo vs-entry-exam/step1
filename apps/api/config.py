@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 
 def _load_env_file(path: Path) -> None:
@@ -44,6 +44,7 @@ class Config:
     chunk_overlap: int
 
     allow_origins: List[str]
+    prompt_file: Optional[str]
 
 
 def load_config() -> Config:
@@ -67,5 +68,5 @@ def load_config() -> Config:
         chunk_size=int(os.getenv("CHUNK_SIZE", "1000")),
         chunk_overlap=int(os.getenv("CHUNK_OVERLAP", "150")),
         allow_origins=allow_origins,
+        prompt_file=os.getenv("PROMPT_FILE") or os.getenv("PROMPT_PATH"),
     )
-

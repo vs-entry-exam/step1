@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import tempfile
 from typing import List, Tuple
 
 from fastapi import APIRouter, UploadFile, File, HTTPException
@@ -27,28 +28,27 @@ async def ingest(files: List[UploadFile] = File(...)):
     for f in files:
         suffix = Path(f.filename or "").suffix.lower()
         title = Path(f.filename or "untitled").name
-        # Save to a temporary path in memory? We can read bytes and parse
         data = await f.read()
-        tmp = Path("/tmp") / title  # not persisted; just for parser convenience names
-        # Write to a temp file within working dir if needed
         try:
             if suffix == ".pdf":
-                # For PDF, we need a real file path; create a temp file in cwd
-                p = Path(title)
-                p.write_bytes(data)
+                # For PDF, pypdf benefits from a real file path: use secure temp file
+                tmp = None
                 try:
-                    pages = read_pdf(p)
+                    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tf:
+                        tf.write(data)
+                        tmp = Path(tf.name)
+                    pages = read_pdf(tmp)
                 finally:
-                    try:
-                        p.unlink(missing_ok=True)
-                    except Exception:
-                        pass
+                    if tmp is not None:
+                        try:
+                            tmp.unlink(missing_ok=True)
+                        except Exception:
+                            pass
                 for page_num, content in pages:
                     text = clean_text(content)
                     chunks = chunk_text(text, chunk_size=cfg.chunk_size, overlap=cfg.chunk_overlap)
                     for ch in chunks:
                         docs.append((title, page_num, ch))
-                total_chunks += len(docs)
             elif suffix in {".md", ".txt"}:
                 text = (data.decode("utf-8", errors="ignore"))
                 text = clean_text(text)
@@ -67,4 +67,3 @@ async def ingest(files: List[UploadFile] = File(...)):
         vs.upsert(docs)
 
     return {"indexed": len(docs)}
-

@@ -41,8 +41,9 @@ def _project_root() -> Path:
 
 
 def _resolve_prompt_path() -> Path:
-    # Allow override via environment variable PROMPT_FILE or PROMPT_PATH
-    env_path = os.getenv("PROMPT_FILE") or os.getenv("PROMPT_PATH")
+    # Allow override via config (PROMPT_FILE/PROMPT_PATH) or environment variables
+    cfg = load_config()
+    env_path = cfg.prompt_file or os.getenv("PROMPT_FILE") or os.getenv("PROMPT_PATH")
     root = _project_root()
     if env_path:
         p = Path(env_path)

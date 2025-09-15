@@ -15,7 +15,7 @@ class AskRequest(BaseModel):
 
 class AskResponse(BaseModel):
     answer: str
-    sources: List[SourceItem] = []
+    sources: List[SourceItem] = Field(default_factory=list)
 
 
 class DeleteRequest(BaseModel):
