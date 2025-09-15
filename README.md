@@ -18,6 +18,10 @@ step1/
 └─ README.md
 ```
 
+## 다이어그램
+<img width="3924" height="2564" alt="image" src="https://github.com/user-attachments/assets/6d86bf51-63c8-4788-90e9-383c37229e31" />
+
+
 ## 빠른 시작
 백엔드
 ```
