@@ -38,7 +38,7 @@ export function toErrorMessage(e: any): string {
 
 // API helpers
 export async function askQuestion(payload: AskRequest) {
-  const { data } = await api.post<AskResponse>('/ask', payload, {
+  const { data } = await api.post<AskResponse>('/agent', payload, {
     headers: { 'Content-Type': 'application/json' },
   });
   return data;

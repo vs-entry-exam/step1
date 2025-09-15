@@ -24,18 +24,12 @@ def health():
 
 # Include essential routers (should not fail under tests)
 from app.routers.rag import router as ingest_router
-from app.routers.ask import router as ask_router
 from app.routers.admin import router as admin_router
 
 app.include_router(ingest_router)
-app.include_router(ask_router)
 app.include_router(admin_router)
 
 # Include optional Agent router (guarded; relies on LangChain/OpenAI at runtime)
-try:  # pragma: no cover - optional integration
-    from app.routers.agent import router as agent_router
+from app.routers.agent import router as agent_router
 
-    app.include_router(agent_router)
-except Exception:
-    # Agent route is optional; skip if dependencies are missing
-    pass
+app.include_router(agent_router)

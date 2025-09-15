@@ -15,7 +15,7 @@
 
 ## 아키텍처
 - 프론트엔드: `/rag` 업로드/삭제 UI, `/agent` 질문 UI
-- 백엔드: `/rag` 파일 수신→파이프라인→Chroma upsert, `/ask` 검색→LLM 답변, `DELETE /docs` 삭제
+- 백엔드: `/rag` 파일 수신→파이프라인→Chroma upsert, `/agent` 검색→LLM 답변, `DELETE /docs` 삭제
 - 저장소: ChromaDB 로컬 퍼시스트(`step1/chroma`)
 - 프롬프트: 파일 기반 로딩(캐시) + 폴백 정책
 
@@ -43,7 +43,7 @@ step1/
 - `CHROMA_PERSIST_DIR` 상대경로는 `apps/api` 기준
 
 ## API 요약
-- `GET /health`, `POST /rag`, `POST /ask`, `DELETE /docs`
+- `GET /health`, `POST /rag`, `POST /agent`, `DELETE /docs`
 - 상세 계약/구현: `apps/api/AGENTS.md`
 
 ## 테스트 개요

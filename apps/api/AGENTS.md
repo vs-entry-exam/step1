@@ -10,21 +10,19 @@
 ## 현재 상태
 - 앱/CORS/헬스체크: `app/main.py` (GET `/health` 동작)
 - 업로드 파이프라인: `app/routers/rag.py`, `app/core/parsing.py`, `app/core/vectorstore.py`, `app/core/providers/embeddings.py`
-- 질의 파이프라인: `app/routers/ask.py`(서비스 레이어 사용), `app/core/providers/llm.py`, `app/core/prompts.py`
-- Agent: `app/routers/agent.py` (LangChain Agent + Retrieval Tool)
+- 질의 파이프라인: `app/routers/agent.py`(서비스 레이어 사용), `app/core/providers/llm.py`, `app/core/prompts.py`
 - 설정/스키마: `app/config.py`, `app/models/schemas.py`
 
 ## 주요 파일
 - `app/main.py`: FastAPI 초기화, CORS, `/health`, 라우터 포함
 - `app/routers/rag.py`: `POST /rag` 업로드(서비스 호출)
-- `app/routers/ask.py`: `POST /ask`(서비스 호출)
-- `app/routers/agent.py`: `POST /agent` LangChain Agent(Zero‑Shot ReAct + Retrieval Tool)
+- `app/routers/agent.py`: `POST /agent`(서비스 호출; AskResponse 반환)
 - `app/services/rag_service.py`: 업로드 파이프라인 조립(build_docs, upsert_docs)
 - `app/services/ask_service.py`: 질의 파이프라인 조립(answer_question)
 - `app/routers/admin.py`: `DELETE /docs` 메타(title/page) 기반 삭제
 - `app/core/vectorstore.py`: Chroma 퍼시스트 초기화, upsert/query/delete
 - `app/core/parsing.py`: PDF/MD/TXT 읽기, `clean_text`, `chunk_text`
-- `app/core/providers/*`: 임베딩/LLM 클라이언트(OpenAI/Ollama)
+- `app/core/providers/*`: LangChain 기반 임베딩/LLM 클라이언트(OpenAI/Ollama)
 - `app/core/prompts.py`: 프롬프트 파일 로더(mtime 캐시, 폴백 포함)
 - `app/config.py`: `.env.api` 로드, `prompt_file` 등 환경 파라미터 제공
 
@@ -40,20 +38,16 @@
 - `POST /rag` (multipart/form-data)
   - 필드: `files` (다중 허용: PDF/MD/TXT)
   - 응답: `{ "indexed": number }`
-- `POST /ask` (application/json)
-  - 요청: `{ "question": string, "top_k"?: number }`
-  - 응답: `{ "answer": string, "sources": [{ "title": string, "page"?: number, "score"?: number }] }`
 - `POST /agent` (application/json)
   - 요청: `{ "question": string, "top_k"?: number }`
-  - 응답: `{ "answer": string, "sources": [] }` (MVP: OpenAI만 지원)
+  - 응답: `{ "answer": string, "sources": [{ "title": string, "page"?: number, "score"?: number }] }`
 - `DELETE /docs` (application/json)
   - 요청: `{ "title": string, "page"?: number }`
   - 응답: `{ "deleted": number }`
 
 ## RAG 파이프라인
 - 업로드: 파일 파싱 → 텍스트 정리 → 청킹(기본 1000/150) → 임베딩 → Chroma upsert(meta: title, page)
-- 질의: 질문 임베딩 → 유사도 검색(top_k) → 컨텍스트(stuff) → 프롬프트 → LLM 한국어 답변 → 출처 구성
-- Agent: Retrieval Tool로 컨텍스트 확보 → OpenAI Chat 모델로 답변 생성
+- 질의(/agent): 유사도 검색(top_k) → 컨텍스트 빌드 → 프롬프트 → LLM 한국어 답변 → 출처 구성
 
 ## 실행/테스트
 ```
@@ -67,12 +61,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 # 업로드 예시
 curl -F "files=@../../data/sample.pdf" http://localhost:8000/rag
 
-# 질의 예시
-curl -X POST http://localhost:8000/ask \
-  -H 'Content-Type: application/json' \
-  -d '{"question":"sample.pdf 핵심 요약", "top_k":4}'
-
-# Agent 예시
+# 질의 예시(/agent)
 curl -X POST http://localhost:8000/agent \
   -H 'Content-Type: application/json' \
   -d '{"question":"문서 핵심 요약", "top_k":4}'

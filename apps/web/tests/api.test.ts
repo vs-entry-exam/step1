@@ -9,13 +9,13 @@ vi.mock('axios', () => {
 });
 
 describe('lib/api', () => {
-  it('askQuestion posts to /ask', async () => {
+  it('askQuestion posts to /agent', async () => {
     const axiosMock: any = await import('axios');
     axiosMock._post.mockResolvedValueOnce({ data: { answer: 'ok', sources: [] } });
     const mod = await import('../lib/api');
     const res = await mod.askQuestion({ question: 'q', top_k: 3 });
     expect(res.answer).toBe('ok');
-    expect(axiosMock._post).toHaveBeenCalledWith('/ask', { question: 'q', top_k: 3 }, expect.any(Object));
+    expect(axiosMock._post).toHaveBeenCalledWith('/agent', { question: 'q', top_k: 3 }, expect.any(Object));
   });
 
   it('ingestFiles posts multipart to /rag', async () => {
