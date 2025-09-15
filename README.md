@@ -55,6 +55,7 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 PowerShell에서:
 ```
 cd "vision space exam/step1"
+
 # 백엔드와 프론트 동시에(각각 새 터미널 창)
 # Windows PowerShell 내에서:
 powershell -File .\scripts\dev.ps1 -All
