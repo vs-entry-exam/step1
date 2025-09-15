@@ -72,3 +72,21 @@
 - UI 컴포넌트화: 로딩 상태와 알림 표시를 일관화하기 위해 `components/LoadingButton`, `components/Notice`를 추가했습니다.
 - 페이지 코드 정리: `/`(질의)와 `/ingest`(업로드/삭제) 페이지가 공통 헬퍼/컴포넌트를 사용하도록 리팩토링하여 중복을 제거하고 가독성을 개선했습니다.
 - 용어 정비: 모드 토글 라벨을 Ask/RAG로, 업로드 섹션 타이틀을 Upload로 조정했습니다(라우트는 `/ingest` 유지).
+
+---
+
+## Tests (Web)
+- 도구: Vitest + React Testing Library(jsdom), jest-dom 매처
+- 위치: `apps/web/tests`
+- 실행:
+  - `npm run test`  # watch
+  - `npm run test:run`  # 1회 실행
+  - `npm run test:coverage`  # 커버리지
+- 구성 파일:
+  - `vitest.config.ts`: 환경(jsdom), setup 파일 등록
+  - `tests/setup.ts`: `@testing-library/jest-dom` 로드
+- 포함 테스트:
+  - `tests/api.test.ts`: `askQuestion`/`ingestFiles`/`deleteDocs` 호출 형식 검증(axios 모킹)
+  - `tests/components.test.tsx`: `LoadingButton`/`Notice` 렌더·상태 검증
+  - `tests/home.page.test.tsx`: Ask 페이지 상호작용(답변 렌더 확인)
+  - `tests/ingest.page.test.tsx`: Upload 페이지 삭제 유효성(제목 누락 시 에러)
