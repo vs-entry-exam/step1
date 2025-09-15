@@ -20,6 +20,8 @@ export interface AskResponse {
   sources: SourceItem[];
 }
 
+export interface IngestResponse { indexed: number }
+
 export interface DeleteRequest {
   title: string;
   page?: number;
@@ -27,6 +29,28 @@ export interface DeleteRequest {
 
 export interface DeleteResponse {
   deleted: number;
+}
+
+// Error normalization
+export function toErrorMessage(e: any): string {
+  return e?.response?.data?.detail ?? e?.message ?? 'Request failed';
+}
+
+// API helpers
+export async function askQuestion(payload: AskRequest) {
+  const { data } = await api.post<AskResponse>('/ask', payload, {
+    headers: { 'Content-Type': 'application/json' },
+  });
+  return data;
+}
+
+export async function ingestFiles(files: FileList | File[]): Promise<IngestResponse> {
+  const form = new FormData();
+  Array.from(files as File[]).forEach((f) => form.append('files', f));
+  const { data } = await api.post<IngestResponse>('/ingest', form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data;
 }
 
 export async function deleteDocs(payload: DeleteRequest) {

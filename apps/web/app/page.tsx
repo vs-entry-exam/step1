@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { api, AskRequest, AskResponse } from '../lib/api';
+import { AskRequest, AskResponse, askQuestion, toErrorMessage } from '../lib/api';
+import { LoadingButton } from '../components/LoadingButton';
+import { Notice } from '../components/Notice';
 
 export default function AskPage() {
   const [question, setQuestion] = useState('');
@@ -18,13 +20,11 @@ export default function AskPage() {
     setSources([]);
     try {
       const payload: AskRequest = { question, top_k: topK };
-      const { data } = await api.post<AskResponse>('/ask', payload, {
-        headers: { 'Content-Type': 'application/json' },
-      });
+      const data: AskResponse = await askQuestion(payload);
       setAnswer(data.answer);
       setSources(data.sources || []);
     } catch (e: any) {
-      setError(e?.response?.data?.detail ?? e?.message ?? 'Request failed');
+      setError(toErrorMessage(e));
     } finally {
       setLoading(false);
     }
@@ -44,11 +44,11 @@ export default function AskPage() {
             onChange={(e) => setTopK(parseInt(e.target.value || '1', 10))} />
         </div>
         <div style={{ flex: 1 }} />
-        <button onClick={submit} disabled={loading || !question.trim()}>Ask</button>
+        <LoadingButton onClick={submit} loading={loading} disabled={!question.trim()}>Ask</LoadingButton>
       </div>
 
-      {loading && <p className="muted">질의 중...</p>}
-      {error && <p className="accent">에러: {error}</p>}
+      {loading && <Notice>질의 중...</Notice>}
+      {error && <Notice kind="error">에러: {error}</Notice>}
       {answer && (
         <div className="col" style={{ marginTop: 12 }}>
           <h3 style={{ margin: 0 }}>Answer</h3>
@@ -71,4 +71,3 @@ export default function AskPage() {
     </main>
   );
 }
-

@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { api, deleteDocs, DeleteResponse } from '../../lib/api';
+import { ingestFiles, deleteDocs, DeleteResponse, toErrorMessage } from '../../lib/api';
+import { LoadingButton } from '../../components/LoadingButton';
+import { Notice } from '../../components/Notice';
 
 interface IngestResponse { indexed: number }
 
@@ -23,15 +25,11 @@ export default function IngestPage() {
     setLoading(true);
     setError(null);
     setIndexed(null);
-    const form = new FormData();
-    Array.from(files).forEach((f) => form.append('files', f));
     try {
-      const { data } = await api.post<IngestResponse>('/ingest', form, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const data = await ingestFiles(files);
       setIndexed(data.indexed);
     } catch (e: any) {
-      setError(e?.response?.data?.detail ?? e?.message ?? 'Upload failed');
+      setError(toErrorMessage(e));
     } finally {
       setLoading(false);
     }
@@ -46,15 +44,11 @@ export default function IngestPage() {
           <input id="files" type="file" multiple onChange={(e) => setFiles(e.target.files)} />
         </div>
         <div className="row">
-          <button onClick={onSubmit} disabled={loading || !files || files.length === 0}>Upload</button>
-          {loading && <span className="muted"> 업로드/인덱싱 중...</span>}
+          <LoadingButton onClick={onSubmit} loading={loading} disabled={!files || files.length === 0}>Upload</LoadingButton>
+          {loading && <Notice>업로드/인덱싱 중...</Notice>}
         </div>
-        {indexed != null && (
-          <p className="accent2">indexed: {indexed}</p>
-        )}
-        {error && (
-          <p className="accent">에러: {error}</p>
-        )}
+        {indexed != null && (<Notice kind="success">indexed: {indexed}</Notice>)}
+        {error && (<Notice kind="error">에러: {error}</Notice>)}
       </section>
 
       <section className="panel col">
@@ -72,10 +66,10 @@ export default function IngestPage() {
               onChange={(e) => setDelPage(e.target.value)} />
           </div>
           <div className="row" style={{ gap: 8 }}>
-            <button className="secondary" onClick={async () => {
+            <LoadingButton variant="secondary" onClick={async () => {
               setDelTitle(''); setDelPage(''); setDelResult(null); setDelError(null);
-            }}>Reset</button>
-            <button onClick={async () => {
+            }}>Reset</LoadingButton>
+            <LoadingButton onClick={async () => {
               if (!delTitle.trim()) { setDelError('title을 입력하세요'); return; }
               if (!confirm('정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) return;
               setDelLoading(true); setDelError(null); setDelResult(null);
@@ -84,16 +78,16 @@ export default function IngestPage() {
                 const data: DeleteResponse = await deleteDocs({ title: delTitle.trim(), page: pageNum });
                 setDelResult(data.deleted ?? 0);
               } catch (e: any) {
-                setDelError(e?.response?.data?.detail ?? e?.message ?? 'Delete failed');
+                setDelError(toErrorMessage(e));
               } finally {
                 setDelLoading(false);
               }
-            }} disabled={delLoading || !delTitle.trim()}>Delete</button>
+            }} loading={delLoading} disabled={!delTitle.trim()}>Delete</LoadingButton>
           </div>
         </div>
-        {delLoading && <p className="muted">삭제 중...</p>}
-        {delResult != null && <p className="accent2">deleted: {delResult}</p>}
-        {delError && <p className="accent">에러: {delError}</p>}
+        {delLoading && <Notice>삭제 중...</Notice>}
+        {delResult != null && <Notice kind="success">deleted: {delResult}</Notice>}
+        {delError && <Notice kind="error">에러: {delError}</Notice>}
       </section>
     </main>
   );
