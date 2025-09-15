@@ -170,3 +170,30 @@ curl -X POST http://localhost:8000/ask -H 'Content-Type: application/json' \
 * [ ] `/ask` 응답에 **한글 답변 + \[title\:page] 출처** 포함
 * [ ] 샘플 PDF/MD/TXT 각각 1개 이상으로 동작 확인
 * [ ] 실행/시연 영상(업로드→질의→출처 확인 흐름)
+
+---
+
+### 9) 커밋 규칙 (Conventional Commits, 요약)
+
+- 형식: `type(scope)!: subject`
+  - `type`: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
+  - `scope`(선택): `web`, `api`, `rag`, `ingest`, `prompts`, `infra`, `repo` 등 디렉터리/모듈명
+  - `subject`: 한글/영문 모두 가능, 간결한 현재형 설명(마침표 X)
+- 본문(선택): 변경 배경과 상세를 `- ` 불릿으로 기술, 줄바꿈 72자 권장
+- 푸터(선택): `Closes #123`, `BREAKING CHANGE:` 등 표기
+- 메시지 언어는 한국어 권장(일관성 유지)
+
+예시(현재 히스토리 기준):
+
+```
+feat(web): Next.js 프론트 초기 세팅 및 기본 페이지 추가
+chore: update AGENTS.md
+docs: README 업데이트
+```
+
+가이드:
+
+- 여러 영역이 섞이면 커밋을 분리하거나, 대표 scope를 쓰고 본문에 상세를 불릿으로 정리
+- 사소한 정리/설정 변경은 `chore:` 사용
+- 문서만 변경은 `docs:` 사용 (예: 과거 `Create README.md` → `docs: create README` 권장)
+- 파급적 변경은 `!`와 `BREAKING CHANGE:`로 명시
